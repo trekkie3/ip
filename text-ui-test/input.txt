@@ -1,0 +1,10 @@
+list
+todo read book
+deadline complete assignment /by Sunday
+event club meeting /from 7PM /to 9PM
+list
+mark 1
+mark 2
+unmark 1
+list
+bye
