@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -16,6 +17,53 @@ public class Iris {
     }
 
 
+    /**
+     * Saves taskList into data.txt.
+     *
+     * @param filePath Path to save tasks
+     * @param taskList List of tasks
+     */
+    static void save(String filePath, List<Task> taskList) {
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(filePath));
+            for (Task task : taskList) {
+                writer.println(task.serialize());
+            }
+            writer.close();
+        } catch(IOException exception) {
+            System.err.println("Error: Failed to write tasks to " + filePath + ".");
+        }
+    }
+
+
+    /**
+     * Loads taskList from the specified filePath.
+     *
+     * @param filePath Path to load tasks
+     * @return loaded task list
+     */
+    static List<Task> load(String filePath) {
+        List<Task> taskList = new ArrayList<>();
+        try {
+            Scanner scanner = new Scanner(new File(filePath));
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                Task task = Task.deserialize(line);
+                if (task != null) {
+                    taskList.add(task);
+                    System.out.println("Loaded task: " + task);
+                } else {
+                    System.err.println("Error: Malformed task line, ignoring: " + line);
+                }
+            }
+            scanner.close();
+        } catch(FileNotFoundException exception) {
+            System.out.println("Note: Tasks " + filePath + " not found. Starting from scratch...");
+        }
+        return taskList;
+    }
+
+
     private static void printUsageHint(String command, String usage) {
         System.err.printf("Incorrect usage of the \"%s\" command.\n", command);
         System.err.printf("Usage: %s\n", usage);
@@ -23,10 +71,11 @@ public class Iris {
 
 
     public static void main(String[] args) {
-        preamble();
-
         Scanner reader = new Scanner(System.in);
-        List<Task> taskList = new ArrayList<>();
+        String filePath = "data.txt";
+        List<Task> taskList = load(filePath);
+
+        preamble();
 
         MAIN: while(true) {
             Command command = new Command(reader.nextLine());
@@ -110,6 +159,7 @@ public class Iris {
             System.out.println(SEPARATOR);
         }
 
+        save(filePath, taskList);
         farewell();
     }
 }
