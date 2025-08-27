@@ -1,10 +1,17 @@
+
 package task;
 
-public class Event extends Task {
-    final String from;
-    final String to;
 
-    public Event(String description, String from, String to) {
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+public class Event extends Task {
+    final LocalDate from;
+    final LocalDate to;
+    private static final DateTimeFormatter PARSER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMM d yyyy");
+
+    public Event(String description, LocalDate from, LocalDate to) {
         super(description);
         this.from = from;
         this.to = to;
@@ -14,8 +21,8 @@ public class Event extends Task {
         return String.format(
                 "[E]%s (from: %s to: %s)",
                 super.toString(),
-                this.from,
-                this.to
+                from.format(FORMATTER),
+                to.format(FORMATTER)
         );
     }
 
@@ -54,11 +61,17 @@ public class Event extends Task {
         if (description == null || from == null || to == null) {
             throw new TaskException(TaskExceptionType.ARGUMENTS_MISSING);
         }
-        return new Event(description, from, to);
+        try {
+            LocalDate fromDate = LocalDate.parse(from, PARSER);
+            LocalDate toDate = LocalDate.parse(to, PARSER);
+            return new Event(description, fromDate, toDate);
+        } catch (Exception exception) {
+            throw new TaskException(TaskExceptionType.INVALID_DATE_FORMAT);
+        }
     }
 
     @Override
     public String serialize() {
-        return String.format("EVENT|%b|%s|%s|%s", isDone, description, from, to);
+        return String.format("EVENT|%b|%s|%s|%s", isDone, description, from.format(FORMATTER), to.format(FORMATTER));
     }
 }

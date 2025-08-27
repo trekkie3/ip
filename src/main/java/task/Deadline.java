@@ -1,9 +1,15 @@
+
 package task;
 
-public class Deadline extends Task {
-    final String deadline;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-    public Deadline(String description, String deadline) {
+public class Deadline extends Task {
+    final LocalDate deadline;
+    private static final DateTimeFormatter PARSER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMM d yyyy");
+
+    public Deadline(String description, LocalDate deadline) {
         super(description);
         this.deadline = deadline;
     }
@@ -12,7 +18,7 @@ public class Deadline extends Task {
         return String.format(
                 "[D]%s (by: %s)",
                 super.toString(),
-                this.deadline
+                deadline.format(FORMATTER)
         );
     }
 
@@ -46,11 +52,16 @@ public class Deadline extends Task {
         if (description == null || by == null) {
             throw new TaskException(TaskExceptionType.ARGUMENTS_MISSING);
         }
-        return new Deadline(description, by);
+        try {
+            LocalDate deadlineDate = LocalDate.parse(by, PARSER);
+            return new Deadline(description, deadlineDate);
+        } catch (Exception exception) {
+            throw new TaskException(TaskExceptionType.INVALID_DATE_FORMAT);
+        }
     }
 
     @Override
     public String serialize() {
-        return String.format("DEADLINE|%b|%s|%s", isDone, description, deadline);
+        return String.format("DEADLINE|%b|%s|%s", isDone, description, deadline.format(FORMATTER));
     }
 }

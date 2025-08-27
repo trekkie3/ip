@@ -1,5 +1,8 @@
 package task;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 public abstract class Task {
     protected String description;
     protected boolean isDone;
@@ -52,12 +55,19 @@ public abstract class Task {
                 return todo;
             case "DEADLINE":
                 if (parts.length < 4) return null;
-                Deadline deadline = new Deadline(description, parts[3]);
+                // Use the same formatter as Deadline
+                DateTimeFormatter deadlineFormatter = DateTimeFormatter.ofPattern("MMM d yyyy");
+                Deadline deadline = new Deadline(description, LocalDate.parse(parts[3], deadlineFormatter));
                 deadline.setDone(isDone);
                 return deadline;
             case "EVENT":
                 if (parts.length < 5) return null;
-                Event event = new Event(description, parts[3], parts[4]);
+                // Use the same formatter as Event
+                DateTimeFormatter eventFormatter = DateTimeFormatter.ofPattern("MMM d yyyy");
+                Event event = new Event(description,
+                        java.time.LocalDate.parse(parts[3], eventFormatter),
+                        java.time.LocalDate.parse(parts[4], eventFormatter)
+                );
                 event.setDone(isDone);
                 return event;
             default:
