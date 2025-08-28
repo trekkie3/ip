@@ -30,16 +30,17 @@ public abstract class Task {
     }
 
     /**
-     * Serializes this task.Task to a string for saving.
+     * Serializes the Task object to a string.
+     *
+     * @return the serialized string
      */
-    public String serialize() {
-        // Should be overridden by subclasses
-        return String.format("TASK|%b|%s", isDone, description);
-    }
+    public abstract String serialize();
 
     /**
-     * Deserializes a string to a task.Task object.
-     * Returns null if the line is malformed.
+     * Deserializes a string to a Task object.
+     *
+     * @param line the serialized string
+     * @return the deserialized Task object, or null if deserialization fails
      */
     public static Task deserialize(String line) {
         if (line == null || line.isEmpty()) return null;

@@ -1,7 +1,15 @@
+/**
+ * Represents a command given by the user.
+ */
 public class Command {
     final CommandType type;
     String maybeArgument = null;
 
+    /**
+     * Creates a Command object from a line of input.
+     *
+     * @param line input line
+     */
     public Command(String line) {
         switch (line) {
             case "list" -> this.type = CommandType.LIST;

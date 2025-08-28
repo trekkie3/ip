@@ -26,6 +26,13 @@ public class Event extends Task {
         );
     }
 
+    /**
+     * Generates an Event task from the given argument string.
+     *
+     * @param argument string containing details
+     * @return Event task
+     * @throws TaskException on invalid argument
+     */
     public static Event generateEvent(String argument) throws TaskException {
         if (argument == null) {
             throw new TaskException(TaskExceptionType.NO_ARGUMENTS_PROVIDED);
@@ -70,6 +77,11 @@ public class Event extends Task {
         }
     }
 
+    /**
+     * Serializes the Event task into a string for storage.
+     *
+     * @return Serialized string
+     */
     @Override
     public String serialize() {
         return String.format("EVENT|%b|%s|%s|%s", isDone, description, from.format(FORMATTER), to.format(FORMATTER));

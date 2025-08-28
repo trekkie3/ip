@@ -22,6 +22,13 @@ public class Deadline extends Task {
         );
     }
 
+    /**
+     * Generates a Deadline task from the given argument string.
+     *
+     * @param argument string containing details
+     * @return Deadline task
+     * @throws TaskException on invalid argument
+     */
     public static Deadline generateDeadline(String argument) throws TaskException {
         if (argument == null) {
             throw new TaskException(TaskExceptionType.NO_ARGUMENTS_PROVIDED);
@@ -60,6 +67,11 @@ public class Deadline extends Task {
         }
     }
 
+    /**
+     * Serializes the  task into a string for storage.
+     *
+     * @return Serialized string
+     */
     @Override
     public String serialize() {
         return String.format("DEADLINE|%b|%s|%s", isDone, description, deadline.format(FORMATTER));
