@@ -117,6 +117,16 @@ public class Iris {
                     printUsageHint("deadline", "deadline <description> /by <date>");
                 }
             }
+            case FIND -> {
+                String keyword = command.maybeArgument;
+                System.out.println("Here are the matching tasks in your list:");
+                for (int i = 0; i < taskList.size(); i++) {
+                    Task task = taskList.get(i);
+                    if (task.getDescription().contains(keyword)) {
+                        System.out.printf("%d: %s\n", i + 1, task);
+                    }
+                }
+            }
             case DELETE -> {
                 try {
                     int listNumber = Integer.parseInt(command.maybeArgument);

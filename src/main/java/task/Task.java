@@ -4,12 +4,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public abstract class Task {
-    protected String description;
+    protected final String description;
     protected boolean isDone;
 
     public Task(String description) {
         this.description = description;
         this.isDone = false;
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 
     public void setDone(boolean isDone) {

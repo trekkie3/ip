@@ -13,6 +13,7 @@ public class Command {
                         split.length > 1 ? split[1] : null
                 );
                 switch (command) {
+                    case "find" -> this.type = CommandType.FIND;
                     case "delete" -> this.type = CommandType.DELETE;
                     case "mark" -> this.type = CommandType.MARK;
                     case "unmark" -> this.type = CommandType.UNMARK;
