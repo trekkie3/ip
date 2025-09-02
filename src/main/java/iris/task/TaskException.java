@@ -1,7 +1,7 @@
-package task;
+package iris.task;
 
 /**
- * Custom exception class for task-related errors.
+ * Custom exception class for iris.task-related errors.
  */
 public class TaskException extends Exception {
     final TaskExceptionType exceptionType;

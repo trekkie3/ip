@@ -1,12 +1,20 @@
-package task;
+package iris.task;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Represents a Task with a description and completion status.
+ */
 public abstract class Task {
     protected final String description;
     protected boolean isDone;
 
+    /**
+     * Creates a new Task with the given description.
+     *
+     * @param description the description of the task
+     */
     public Task(String description) {
         this.description = description;
         this.isDone = false;
@@ -47,7 +55,9 @@ public abstract class Task {
      * @return the deserialized Task object, or null if deserialization fails
      */
     public static Task deserialize(String line) {
-        if (line == null || line.isEmpty()) return null;
+        if (line == null || line.isEmpty()) {
+            return null;
+        }
         String[] parts = line.split("\\|");
         try {
             String type = parts[0];
@@ -59,14 +69,18 @@ public abstract class Task {
                 todo.setDone(isDone);
                 return todo;
             case "DEADLINE":
-                if (parts.length < 4) return null;
+                if (parts.length < 4) {
+                    return null;
+                }
                 // Use the same formatter as Deadline
                 DateTimeFormatter deadlineFormatter = DateTimeFormatter.ofPattern("MMM d yyyy");
                 Deadline deadline = new Deadline(description, LocalDate.parse(parts[3], deadlineFormatter));
                 deadline.setDone(isDone);
                 return deadline;
             case "EVENT":
-                if (parts.length < 5) return null;
+                if (parts.length < 5) {
+                    return null;
+                }
                 // Use the same formatter as Event
                 DateTimeFormatter eventFormatter = DateTimeFormatter.ofPattern("MMM d yyyy");
                 Event event = new Event(description,

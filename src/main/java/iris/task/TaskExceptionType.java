@@ -1,5 +1,8 @@
-package task;
+package iris.task;
 
+/**
+ * Enum representing different types of task-related exceptions.
+ */
 public enum TaskExceptionType {
     NO_ARGUMENTS_PROVIDED,
     ARGUMENTS_MISSING,

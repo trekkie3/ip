@@ -1,17 +1,23 @@
-import task.Deadline;
-import task.Event;
-import task.Task;
-import task.Todo;
+package iris;
 
 import java.io.File;
-import java.io.PrintWriter;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import iris.task.Deadline;
+import iris.task.Event;
+import iris.task.Task;
+import iris.task.Todo;
+
+/**
+ * Main class of the Iris application.
+ * Handles user interaction, command parsing, and task management.
+ */
 public class Iris {
     static final String SEPARATOR = "-------------------------------------";
 
@@ -49,7 +55,7 @@ public class Iris {
      * Loads taskList from the specified filePath.
      *
      * @param filePath Path to load tasks
-     * @return loaded task list
+     * @return loaded iris.task list
      */
     static List<Task> load(String filePath) {
         List<Task> taskList = new ArrayList<>();
@@ -60,9 +66,9 @@ public class Iris {
                 Task task = Task.deserialize(line);
                 if (task != null) {
                     taskList.add(task);
-                    System.out.println("Loaded task: " + task);
+                    System.out.println("Loaded iris.task: " + task);
                 } else {
-                    System.err.println("Error: Malformed task line, ignoring: " + line);
+                    System.err.println("Error: Malformed iris.task line, ignoring: " + line);
                 }
             }
             scanner.close();
@@ -89,13 +95,14 @@ public class Iris {
         MAIN:
         while (true) {
             Command command = new Command(reader.nextLine());
+            String maybeArgument = command.getMaybeArgument();
 
             switch (command.type) {
             case ADD_TODO -> {
                 try {
-                    Task task = Todo.generateTodo(command.maybeArgument);
+                    Task task = Todo.generateTodo(maybeArgument);
                     taskList.add(task);
-                    System.out.println("Added new task:");
+                    System.out.println("Added new iris.task:");
                     System.out.println(task);
                 } catch (Exception exception) {
                     printUsageHint("todo", "todo <description>");
@@ -103,9 +110,9 @@ public class Iris {
             }
             case ADD_EVENT -> {
                 try {
-                    Task task = Event.generateEvent(command.maybeArgument);
+                    Task task = Event.generateEvent(maybeArgument);
                     taskList.add(task);
-                    System.out.println("Added new task:");
+                    System.out.println("Added new iris.task:");
                     System.out.println(task);
                 } catch (Exception exception) {
                     printUsageHint("event", "event <description> /from <date> /to <date>");
@@ -113,29 +120,28 @@ public class Iris {
             }
             case ADD_DEADLINE -> {
                 try {
-                    Task task = Deadline.generateDeadline(command.maybeArgument);
+                    Task task = Deadline.generateDeadline(maybeArgument);
                     taskList.add(task);
-                    System.out.println("Added new task:");
+                    System.out.println("Added new iris.task:");
                     System.out.println(task);
                 } catch (Exception exception) {
                     printUsageHint("deadline", "deadline <description> /by <date>");
                 }
             }
             case FIND -> {
-                String keyword = command.maybeArgument;
                 System.out.println("Here are the matching tasks in your list:");
                 for (int i = 0; i < taskList.size(); i++) {
                     Task task = taskList.get(i);
-                    if (task.getDescription().contains(keyword)) {
+                    if (task.getDescription().contains(maybeArgument)) {
                         System.out.printf("%d: %s\n", i + 1, task);
                     }
                 }
             }
             case DELETE -> {
                 try {
-                    int listNumber = Integer.parseInt(command.maybeArgument);
+                    int listNumber = Integer.parseInt(maybeArgument);
                     Task removed = taskList.remove(listNumber - 1);
-                    System.out.println("I've deleted this task:");
+                    System.out.println("I've deleted this iris.task:");
                     System.out.println(removed);
                     System.out.printf("You have %d tasks left.\n", taskList.size());
                 } catch (Exception exception) {
@@ -150,9 +156,9 @@ public class Iris {
             }
             case MARK -> {
                 try {
-                    int listNumber = Integer.parseInt(command.maybeArgument);
+                    int listNumber = Integer.parseInt(maybeArgument);
                     taskList.get(listNumber - 1).setDone(true);
-                    System.out.println("I've marked this task as done:");
+                    System.out.println("I've marked this iris.task as done:");
                     System.out.println(taskList.get(listNumber - 1));
                 } catch (Exception exception) {
                     printUsageHint("mark", "mark <item-number>");
@@ -160,9 +166,9 @@ public class Iris {
             }
             case UNMARK -> {
                 try {
-                    int listNumber = Integer.parseInt(command.maybeArgument);
+                    int listNumber = Integer.parseInt(maybeArgument);
                     taskList.get(listNumber - 1).setDone(false);
-                    System.out.println("I've marked this task to be completed:");
+                    System.out.println("I've marked this iris.task to be completed:");
                     System.out.println(taskList.get(listNumber - 1));
                 } catch (Exception exception) {
                     printUsageHint("unmark", "unmark <item-number>");
@@ -172,6 +178,7 @@ public class Iris {
                 break MAIN;
             }
             case INVALID -> System.err.println("Please input a valid command.");
+            default -> System.err.println("An unknown error occurred.");
             }
 
             System.out.println(SEPARATOR);

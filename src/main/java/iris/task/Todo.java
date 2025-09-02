@@ -1,5 +1,8 @@
-package task;
+package iris.task;
 
+/**
+ * Represents a Todo task with a description.
+ */
 public class Todo extends Task {
     public Todo(String description) {
         super(description);
@@ -10,10 +13,10 @@ public class Todo extends Task {
     }
 
     /**
-     * Generates a Todo task from the given argument string.
+     * Generates a Todo iris.task from the given argument string.
      *
      * @param argument string containing details
-     * @return Todo task
+     * @return Todo iris.task
      * @throws TaskException on invalid argument
      */
     public static Todo generateTodo(String argument) throws TaskException {
@@ -24,7 +27,7 @@ public class Todo extends Task {
     }
 
     /**
-     * Serializes the Todo task into a string for storage.
+     * Serializes the Todo iris.task into a string for storage.
      *
      * @return Serialized string
      */

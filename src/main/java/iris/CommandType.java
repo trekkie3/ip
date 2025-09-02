@@ -1,3 +1,8 @@
+package iris;
+
+/**
+ * Enum representing the types of commands that can be issued by the user.
+ */
 public enum CommandType {
     ADD_TODO,
     ADD_DEADLINE,

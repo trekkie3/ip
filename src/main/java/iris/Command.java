@@ -1,12 +1,14 @@
+package iris;
+
 /**
  * Represents a command given by the user.
  */
 public class Command {
     final CommandType type;
-    String maybeArgument = null;
+    private String maybeArgument = null;
 
     /**
-     * Creates a Command object from a line of input.
+     * Creates a iris.Command object from a line of input.
      *
      * @param line input line
      */
@@ -17,9 +19,7 @@ public class Command {
         default -> {
             String[] split = line.split(" ", 2);
             String command = split[0];
-            this.maybeArgument = (
-                    split.length > 1 ? split[1] : null
-            );
+            this.maybeArgument = split.length > 1 ? split[1] : null;
             switch (command) {
             case "find" -> this.type = CommandType.FIND;
             case "delete" -> this.type = CommandType.DELETE;
@@ -32,5 +32,9 @@ public class Command {
             }
         }
         }
+    }
+
+    public String getMaybeArgument() {
+        return maybeArgument;
     }
 }

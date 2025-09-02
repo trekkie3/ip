@@ -1,22 +1,37 @@
 
-package task;
-
+package iris.task;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Represents an Event task with a description, start date, and end date.
+ */
 public class Event extends Task {
-    final LocalDate from;
-    final LocalDate to;
     private static final DateTimeFormatter PARSER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMM d yyyy");
 
+    final LocalDate from;
+    final LocalDate to;
+
+    /**
+     * Constructs an Event iris.task.
+     *
+     * @param description Description of the event
+     * @param from        Start date of the event
+     * @param to          End date of the event
+     */
     public Event(String description, LocalDate from, LocalDate to) {
         super(description);
         this.from = from;
         this.to = to;
     }
 
+    /**
+     * Returns a string representation of the Event iris.task.
+     *
+     * @return String representation
+     */
     public String toString() {
         return String.format(
                 "[E]%s (from: %s to: %s)",
@@ -27,10 +42,10 @@ public class Event extends Task {
     }
 
     /**
-     * Generates an Event task from the given argument string.
+     * Generates an Event iris.task from the given argument string.
      *
      * @param argument string containing details
-     * @return Event task
+     * @return Event iris.task
      * @throws TaskException on invalid argument
      */
     public static Event generateEvent(String argument) throws TaskException {
@@ -78,7 +93,7 @@ public class Event extends Task {
     }
 
     /**
-     * Serializes the Event task into a string for storage.
+     * Serializes the Event iris.task into a string for storage.
      *
      * @return Serialized string
      */

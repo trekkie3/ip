@@ -1,19 +1,34 @@
 
-package task;
+package iris.task;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Represents a Deadline task with a description and a deadline date.
+ */
 public class Deadline extends Task {
-    final LocalDate deadline;
     private static final DateTimeFormatter PARSER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMM d yyyy");
 
+    final LocalDate deadline;
+
+    /**
+     * Constructs a Deadline task.
+     *
+     * @param description task description
+     * @param deadline    task deadline
+     */
     public Deadline(String description, LocalDate deadline) {
         super(description);
         this.deadline = deadline;
     }
 
+    /**
+     * Returns a string representation of the Deadline task.
+     *
+     * @return string representation
+     */
     public String toString() {
         return String.format(
                 "[D]%s (by: %s)",
@@ -23,10 +38,10 @@ public class Deadline extends Task {
     }
 
     /**
-     * Generates a Deadline task from the given argument string.
+     * Generates a Deadline iris.task from the given argument string.
      *
      * @param argument string containing details
-     * @return Deadline task
+     * @return Deadline iris.task
      * @throws TaskException on invalid argument
      */
     public static Deadline generateDeadline(String argument) throws TaskException {
@@ -68,7 +83,7 @@ public class Deadline extends Task {
     }
 
     /**
-     * Serializes the  task into a string for storage.
+     * Serializes the  iris.task into a string for storage.
      *
      * @return Serialized string
      */
