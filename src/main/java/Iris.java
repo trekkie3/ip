@@ -3,7 +3,11 @@ import task.Event;
 import task.Task;
 import task.Todo;
 
-import java.io.*;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -11,13 +15,13 @@ import java.util.Scanner;
 public class Iris {
     static final String SEPARATOR = "-------------------------------------";
 
-    static void preamble() {
+    static void printPreamble() {
         System.out.println("Hello! I'm Iris.");
         System.out.println("What can I do for you?");
         System.out.println(SEPARATOR);
     }
 
-    static void farewell() {
+    static void printFarewell() {
         System.out.println("Bye, see you soon!");
     }
 
@@ -80,7 +84,7 @@ public class Iris {
         String filePath = "data.txt";
         List<Task> taskList = load(filePath);
 
-        preamble();
+        printPreamble();
 
         MAIN:
         while (true) {
@@ -174,6 +178,6 @@ public class Iris {
         }
 
         save(filePath, taskList);
-        farewell();
+        printFarewell();
     }
 }
