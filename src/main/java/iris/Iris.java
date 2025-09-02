@@ -19,26 +19,30 @@ import iris.task.Todo;
  * Handles user interaction, command parsing, and task management.
  */
 public class Iris {
-    static final String SEPARATOR = "-------------------------------------";
+    private final List<Task> taskList;
 
-    static void printPreamble() {
-        System.out.println("Hello! I'm Iris.");
-        System.out.println("What can I do for you?");
-        System.out.println(SEPARATOR);
+    /**
+     * Constructor for Iris class.
+     */
+    public Iris() {
+        this.taskList = new ArrayList<>();
     }
 
-    static void printFarewell() {
-        System.out.println("Bye, see you soon!");
+    /**
+     * Returns the preamble message for the application.
+     *
+     * @return Preamble message string
+     */
+    public String getPreamble() {
+        return "Hello! I'm Iris. What can I do for you?";
     }
-
 
     /**
      * Saves taskList into data.txt.
      *
      * @param filePath Path to save tasks
-     * @param taskList List of tasks
      */
-    static void save(String filePath, List<Task> taskList) {
+    public void save(String filePath) {
         try {
             PrintWriter writer = new PrintWriter(new FileWriter(filePath));
             for (Task task : taskList) {
@@ -55,136 +59,137 @@ public class Iris {
      * Loads taskList from the specified filePath.
      *
      * @param filePath Path to load tasks
-     * @return loaded iris.task list
      */
-    static List<Task> load(String filePath) {
-        List<Task> taskList = new ArrayList<>();
+    public String load(String filePath) {
+        StringBuilder result = new StringBuilder();
         try {
             Scanner scanner = new Scanner(new File(filePath));
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 Task task = Task.deserialize(line);
                 if (task != null) {
-                    taskList.add(task);
-                    System.out.println("Loaded iris.task: " + task);
+                    this.taskList.add(task);
+                    result.append("Loaded iris.task: ").append(task).append("\n");
                 } else {
-                    System.err.println("Error: Malformed iris.task line, ignoring: " + line);
+                    result.append("Error: Malformed iris.task line, ignoring: ").append(line).append("\n");
                 }
             }
             scanner.close();
         } catch (FileNotFoundException exception) {
-            System.out.println("Note: Tasks " + filePath + " not found. Starting from scratch...");
+            result.append("Note: Tasks ").append(filePath).append(" not found. Starting from scratch...");
         }
-        return taskList;
+        return result.toString();
     }
 
 
-    private static void printUsageHint(String command, String usage) {
-        System.err.printf("Incorrect usage of the \"%s\" command.\n", command);
-        System.err.printf("Usage: %s\n", usage);
+    private static String getUsageHint(String command, String usage) {
+        return String.format("Incorrect usage of the \"%s\" command.\n", command) + String.format("Usage: %s\n", usage);
     }
 
 
-    public static void main(String[] args) {
-        Scanner reader = new Scanner(System.in);
-        String filePath = "data.txt";
-        List<Task> taskList = load(filePath);
+    /**
+     * Processes a command string and updates the task list accordingly.
+     *
+     * @param commandString The command string input by the user.
+     * @return A response message indicating the result of the command.
+     */
+    @SuppressWarnings("checkstyle:Indentation")
+    public String processCommand(String commandString) {
+        Command command = new Command(commandString);
+        String maybeArgument = command.getMaybeArgument();
 
-        printPreamble();
-
-        MAIN:
-        while (true) {
-            Command command = new Command(reader.nextLine());
-            String maybeArgument = command.getMaybeArgument();
-
-            switch (command.type) {
-            case ADD_TODO -> {
-                try {
-                    Task task = Todo.generateTodo(maybeArgument);
-                    taskList.add(task);
-                    System.out.println("Added new iris.task:");
-                    System.out.println(task);
-                } catch (Exception exception) {
-                    printUsageHint("todo", "todo <description>");
-                }
+        switch (command.type) {
+        case ADD_TODO -> {
+            try {
+                Task task = Todo.generateTodo(maybeArgument);
+                taskList.add(task);
+                return ("Added new iris.task:\n" + task);
+            } catch (Exception exception) {
+                return getUsageHint("todo", "todo <description>");
             }
-            case ADD_EVENT -> {
-                try {
-                    Task task = Event.generateEvent(maybeArgument);
-                    taskList.add(task);
-                    System.out.println("Added new iris.task:");
-                    System.out.println(task);
-                } catch (Exception exception) {
-                    printUsageHint("event", "event <description> /from <date> /to <date>");
-                }
-            }
-            case ADD_DEADLINE -> {
-                try {
-                    Task task = Deadline.generateDeadline(maybeArgument);
-                    taskList.add(task);
-                    System.out.println("Added new iris.task:");
-                    System.out.println(task);
-                } catch (Exception exception) {
-                    printUsageHint("deadline", "deadline <description> /by <date>");
-                }
-            }
-            case FIND -> {
-                System.out.println("Here are the matching tasks in your list:");
-                for (int i = 0; i < taskList.size(); i++) {
-                    Task task = taskList.get(i);
-                    if (task.getDescription().contains(maybeArgument)) {
-                        System.out.printf("%d: %s\n", i + 1, task);
-                    }
-                }
-            }
-            case DELETE -> {
-                try {
-                    int listNumber = Integer.parseInt(maybeArgument);
-                    Task removed = taskList.remove(listNumber - 1);
-                    System.out.println("I've deleted this iris.task:");
-                    System.out.println(removed);
-                    System.out.printf("You have %d tasks left.\n", taskList.size());
-                } catch (Exception exception) {
-                    printUsageHint("delete", "delete <item-number>");
-                }
-            }
-            case LIST -> {
-                System.out.println("Here are your tasks:");
-                for (int i = 0; i < taskList.size(); i++) {
-                    System.out.printf("%d: %s\n", i + 1, taskList.get(i));
-                }
-            }
-            case MARK -> {
-                try {
-                    int listNumber = Integer.parseInt(maybeArgument);
-                    taskList.get(listNumber - 1).setDone(true);
-                    System.out.println("I've marked this iris.task as done:");
-                    System.out.println(taskList.get(listNumber - 1));
-                } catch (Exception exception) {
-                    printUsageHint("mark", "mark <item-number>");
-                }
-            }
-            case UNMARK -> {
-                try {
-                    int listNumber = Integer.parseInt(maybeArgument);
-                    taskList.get(listNumber - 1).setDone(false);
-                    System.out.println("I've marked this iris.task to be completed:");
-                    System.out.println(taskList.get(listNumber - 1));
-                } catch (Exception exception) {
-                    printUsageHint("unmark", "unmark <item-number>");
-                }
-            }
-            case BYE -> {
-                break MAIN;
-            }
-            case INVALID -> System.err.println("Please input a valid command.");
-            default -> System.err.println("An unknown error occurred.");
-            }
-
-            System.out.println(SEPARATOR);
         }
+        case ADD_EVENT -> {
+            try {
+                Task task = Event.generateEvent(maybeArgument);
+                taskList.add(task);
+                return ("Added new iris.task:\n" + task);
+            } catch (Exception exception) {
+                return getUsageHint("event", "event <description> /from <date> /to <date>");
+            }
+        }
+        case ADD_DEADLINE -> {
+            try {
+                Task task = Deadline.generateDeadline(maybeArgument);
+                taskList.add(task);
+                return ("Added new iris.task:\n" + task);
+            } catch (Exception exception) {
+                return getUsageHint("deadline", "deadline <description> /by <date>");
+            }
+        }
+        case FIND -> {
+            StringBuilder result = new StringBuilder();
+            result.append("Here are the matching tasks in your list:\n");
+            for (int i = 0; i < taskList.size(); i++) {
+                Task task = taskList.get(i);
+                if (task.getDescription().contains(maybeArgument)) {
+                    result.append(String.format("%d: %s\n", i + 1, task));
+                    result.append("\n");
+                }
+            }
+            return result.toString();
+        }
+        case DELETE -> {
+            try {
+                int listNumber = Integer.parseInt(maybeArgument);
+                Task removed = taskList.remove(listNumber - 1);
 
-        save(filePath, taskList);
-        printFarewell();
+                return (
+                        "I've deleted this iris.task:\n"
+                                + removed
+                                + String.format("\nYou have %d tasks left.\n", taskList.size())
+                    );
+            } catch (Exception exception) {
+                return getUsageHint("delete", "delete <item-number>");
+            }
+        }
+        case LIST -> {
+            StringBuilder result = new StringBuilder();
+            result.append("Here are your tasks:\n");
+            for (int i = 0; i < taskList.size(); i++) {
+                result.append(String.format("%d: %s\n", i + 1, taskList.get(i))).append("\n");
+            }
+            return result.toString();
+        }
+        case MARK -> {
+            try {
+                int listNumber = Integer.parseInt(maybeArgument);
+                taskList.get(listNumber - 1).setDone(true);
+
+                return ("I've marked this iris.task as done:\n" + taskList.get(listNumber - 1));
+            } catch (Exception exception) {
+                return getUsageHint("mark", "mark <item-number>");
+            }
+        }
+        case UNMARK -> {
+            try {
+                int listNumber = Integer.parseInt(maybeArgument);
+                taskList.get(listNumber - 1).setDone(false);
+
+                return ("I've marked this iris.task to be completed:\n" + taskList.get(listNumber - 1));
+            } catch (Exception exception) {
+                return getUsageHint("unmark", "unmark <item-number>");
+            }
+        }
+        case BYE -> {
+            return "Bye, see you soon!";
+        }
+        case INVALID -> {
+            return ("Please input a valid command.");
+        }
+        default -> {
+            return ("An unknown error occurred.");
+        }
+        }
     }
+
 }

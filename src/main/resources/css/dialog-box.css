@@ -1,0 +1,19 @@
+.label {
+    -fx-background-color: #f0f0f0;
+    -fx-border-width: 2px;
+    -fx-background-radius: 1em;
+    -fx-border-radius: 1em;
+    -fx-padding: 10px;
+}
+
+#displayPicture {
+    /* Shadow effect on image. */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 5, 5);
+
+    /* Change size of image. */
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+
+    /* Rotate image clockwise by degrees. */
+    -fx-rotate: 0;
+}
