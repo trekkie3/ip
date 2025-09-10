@@ -1,14 +1,13 @@
 package iris.ui;
 
+import java.io.IOException;
+
 import iris.MainWindow;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-
-import java.io.IOException;
 
 /**
  * A dialog box for displaying text in the GUI.
