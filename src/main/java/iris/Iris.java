@@ -75,6 +75,8 @@ public class Iris {
             scanner.close();
         } catch (FileNotFoundException exception) {
             result.append("Note: Tasks ").append(filePath).append(" not found. Starting from scratch...");
+        } catch (Exception exception) {
+            assert false : "Unexpected error when loading tasks from " + filePath + ".";
         }
         return result.toString();
     }
