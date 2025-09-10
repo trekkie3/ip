@@ -43,12 +43,10 @@ public class Iris {
      * @param filePath Path to save tasks
      */
     public void save(String filePath) {
-        try {
-            PrintWriter writer = new PrintWriter(new FileWriter(filePath));
-            for (Task task : taskList) {
-                writer.println(task.serialize());
-            }
-            writer.close();
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+            taskList.stream()
+                    .map(Task::serialize)
+                    .forEach(writer::println);
         } catch (IOException exception) {
             System.err.println("Error: Failed to write tasks to " + filePath + ".");
         }
