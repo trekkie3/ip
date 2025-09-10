@@ -1,17 +1,13 @@
-
 package iris.task;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * Represents a Deadline task with a description and a deadline date.
  */
 public class Deadline extends Task {
-    private static final DateTimeFormatter PARSER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMM d yyyy");
-
-    final LocalDate deadline;
+    private final LocalDate deadline;
 
     /**
      * Constructs a Deadline task.
@@ -33,7 +29,7 @@ public class Deadline extends Task {
         return String.format(
                 "[D]%s (by: %s)",
                 super.toString(),
-                deadline.format(FORMATTER)
+                deadline.format(DATE_STORAGE)
         );
     }
 
@@ -51,7 +47,7 @@ public class Deadline extends Task {
         String description = null;
         String by = null;
         String[] split = argument.split(
-                makeSplitRegex(new String[]{"/by"})
+                makeSplitRegex(new String[]{FLAG_BY})
         );
         String capturing = "description";
         for (String items : split) {
@@ -64,7 +60,7 @@ public class Deadline extends Task {
                 }
                 capturing = null;
             } else {
-                if (items.equals("/by")) {
+                if (items.equals(FLAG_BY)) {
                     capturing = "by";
                 } else {
                     throw new TaskException(TaskExceptionType.UNRECOGNIZED_ARGUMENT);
@@ -75,9 +71,9 @@ public class Deadline extends Task {
             throw new TaskException(TaskExceptionType.ARGUMENTS_MISSING);
         }
         try {
-            LocalDate deadlineDate = LocalDate.parse(by, PARSER);
+            LocalDate deadlineDate = LocalDate.parse(by, DATE_INPUT);
             return new Deadline(description, deadlineDate);
-        } catch (Exception exception) {
+        } catch (DateTimeParseException exception) {
             throw new TaskException(TaskExceptionType.INVALID_DATE_FORMAT);
         }
     }
@@ -89,6 +85,6 @@ public class Deadline extends Task {
      */
     @Override
     public String serialize() {
-        return String.format("DEADLINE|%b|%s|%s", isDone, description, deadline.format(FORMATTER));
+        return String.format("DEADLINE|%b|%s|%s", isDone, description, deadline.format(DATE_STORAGE));
     }
 }
