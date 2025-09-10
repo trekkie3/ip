@@ -34,6 +34,7 @@ public class Main extends Application {
             stage.show();
         } catch (IOException exception) {
             exception.printStackTrace();
+            assert false : "Unexpected error while loading the GUI.";
         }
     }
 }
