@@ -16,7 +16,8 @@ public class Command {
             "unmark", CommandType.UNMARK,
             "todo", CommandType.ADD_TODO,
             "deadline", CommandType.ADD_DEADLINE,
-            "event", CommandType.ADD_EVENT
+            "event", CommandType.ADD_EVENT,
+            "doafter", CommandType.ADD_DO_AFTER
     );
 
     final CommandType type;

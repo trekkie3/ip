@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import iris.task.Deadline;
+import iris.task.DoAfter;
 import iris.task.Event;
 import iris.task.Task;
 import iris.task.Todo;
@@ -124,6 +125,15 @@ public class Iris {
                 return ("Added new iris.task:\n" + task);
             } catch (Exception exception) {
                 return getUsageHint("deadline", "deadline <description> /by <date>");
+            }
+        }
+        case ADD_DO_AFTER -> {
+            try {
+                Task task = DoAfter.generateDoAfter(maybeArgument);
+                taskList.add(task);
+                return ("Added new iris.task:\n" + task);
+            } catch (Exception exception) {
+                return getUsageHint("doafter", "doafter <description> /after <date>");
             }
         }
         case FIND -> {

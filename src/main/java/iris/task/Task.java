@@ -16,6 +16,7 @@ public abstract class Task {
     public static final String FLAG_BY = "/by";
     public static final String FLAG_FROM = "/from";
     public static final String FLAG_TO = "/to";
+    public static final String FLAG_AFTER = "/after";
 
     protected final String description;
     protected boolean isDone;
@@ -102,6 +103,13 @@ public abstract class Task {
                 );
                 event.setDone(isDone);
                 return event;
+            case "DOAFTER":
+                if (parts.length < 4) {
+                    return null;
+                }
+                DoAfter doAfter = new DoAfter(description, LocalDate.parse(parts[3], DATE_STORAGE));
+                doAfter.setDone(isDone);
+                return doAfter;
             default:
                 return null;
             }

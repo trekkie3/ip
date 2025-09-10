@@ -7,6 +7,7 @@ public enum CommandType {
     ADD_TODO,
     ADD_DEADLINE,
     ADD_EVENT,
+    ADD_DO_AFTER,
     FIND,
     DELETE,
     MARK,
