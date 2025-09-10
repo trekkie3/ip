@@ -2,13 +2,24 @@ package iris.task;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Pattern;
 
 /**
  * Represents a Task with a description and completion status.
  */
 public abstract class Task {
+    // Shared date formatters
+    public static final DateTimeFormatter DATE_INPUT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public static final DateTimeFormatter DATE_STORAGE = DateTimeFormatter.ofPattern("MMM d yyyy");
+
+    // Centralized flag tokens
+    public static final String FLAG_BY = "/by";
+    public static final String FLAG_FROM = "/from";
+    public static final String FLAG_TO = "/to";
+
     protected final String description;
     protected boolean isDone;
+
 
     /**
      * Creates a new Task with the given description.
@@ -33,11 +44,17 @@ public abstract class Task {
     }
 
     static String makeSplitRegex(String[] keywords) {
+        if (keywords == null || keywords.length == 0) {
+            return "";
+        }
         StringBuilder result = new StringBuilder();
         for (String keyword : keywords) {
-            result.append(String.format("(?<=%s)|(?=%s)", keyword, keyword)).append("|");
+            String quoted = Pattern.quote(keyword);
+            result.append("(?<=").append(quoted).append(")|(?=").append(quoted).append(")").append("|");
         }
-        result.deleteCharAt(result.length() - 1);
+        if (!result.isEmpty()) {
+            result.deleteCharAt(result.length() - 1);
+        }
         return result.toString();
     }
 
@@ -72,20 +89,16 @@ public abstract class Task {
                 if (parts.length < 4) {
                     return null;
                 }
-                // Use the same formatter as Deadline
-                DateTimeFormatter deadlineFormatter = DateTimeFormatter.ofPattern("MMM d yyyy");
-                Deadline deadline = new Deadline(description, LocalDate.parse(parts[3], deadlineFormatter));
+                Deadline deadline = new Deadline(description, LocalDate.parse(parts[3], DATE_STORAGE));
                 deadline.setDone(isDone);
                 return deadline;
             case "EVENT":
                 if (parts.length < 5) {
                     return null;
                 }
-                // Use the same formatter as Event
-                DateTimeFormatter eventFormatter = DateTimeFormatter.ofPattern("MMM d yyyy");
                 Event event = new Event(description,
-                        java.time.LocalDate.parse(parts[3], eventFormatter),
-                        java.time.LocalDate.parse(parts[4], eventFormatter)
+                        java.time.LocalDate.parse(parts[3], DATE_STORAGE),
+                        java.time.LocalDate.parse(parts[4], DATE_STORAGE)
                 );
                 event.setDone(isDone);
                 return event;
