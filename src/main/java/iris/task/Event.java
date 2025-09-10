@@ -1,18 +1,14 @@
-
 package iris.task;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * Represents an Event task with a description, start date, and end date.
  */
 public class Event extends Task {
-    private static final DateTimeFormatter PARSER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMM d yyyy");
-
-    final LocalDate from;
-    final LocalDate to;
+    private final LocalDate from;
+    private final LocalDate to;
 
     /**
      * Constructs an Event iris.task.
@@ -36,8 +32,8 @@ public class Event extends Task {
         return String.format(
                 "[E]%s (from: %s to: %s)",
                 super.toString(),
-                from.format(FORMATTER),
-                to.format(FORMATTER)
+                from.format(DATE_STORAGE),
+                to.format(DATE_STORAGE)
         );
     }
 
@@ -56,7 +52,7 @@ public class Event extends Task {
         String from = null;
         String to = null;
         String[] split = argument.split(
-                makeSplitRegex(new String[]{"/from", "/to"})
+                makeSplitRegex(new String[]{FLAG_FROM, FLAG_TO})
         );
         String capturing = "description";
         for (String item : split) {
@@ -71,9 +67,9 @@ public class Event extends Task {
                 }
                 capturing = null;
             } else {
-                if (item.equals("/from")) {
+                if (item.equals(FLAG_FROM)) {
                     capturing = "from";
-                } else if (item.equals("/to")) {
+                } else if (item.equals(FLAG_TO)) {
                     capturing = "to";
                 } else {
                     throw new TaskException(TaskExceptionType.UNRECOGNIZED_ARGUMENT);
@@ -84,10 +80,10 @@ public class Event extends Task {
             throw new TaskException(TaskExceptionType.ARGUMENTS_MISSING);
         }
         try {
-            LocalDate fromDate = LocalDate.parse(from, PARSER);
-            LocalDate toDate = LocalDate.parse(to, PARSER);
+            LocalDate fromDate = LocalDate.parse(from, DATE_INPUT);
+            LocalDate toDate = LocalDate.parse(to, DATE_INPUT);
             return new Event(description, fromDate, toDate);
-        } catch (Exception exception) {
+        } catch (DateTimeParseException exception) {
             throw new TaskException(TaskExceptionType.INVALID_DATE_FORMAT);
         }
     }
@@ -99,6 +95,12 @@ public class Event extends Task {
      */
     @Override
     public String serialize() {
-        return String.format("EVENT|%b|%s|%s|%s", isDone, description, from.format(FORMATTER), to.format(FORMATTER));
+        return String.format(
+                "EVENT|%b|%s|%s|%s",
+                isDone,
+                description,
+                from.format(DATE_STORAGE),
+                to.format(DATE_STORAGE)
+        );
     }
 }

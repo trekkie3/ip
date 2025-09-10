@@ -23,7 +23,11 @@ public class Todo extends Task {
         if (argument == null) {
             throw new TaskException(TaskExceptionType.NO_ARGUMENTS_PROVIDED);
         }
-        return new Todo(argument);
+        String desc = argument.trim();
+        if (desc.isEmpty()) {
+            throw new TaskException(TaskExceptionType.ARGUMENTS_MISSING);
+        }
+        return new Todo(desc);
     }
 
     /**
