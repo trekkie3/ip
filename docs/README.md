@@ -6,7 +6,7 @@ Iris is a lightweight task manager. It supports Todos, Deadlines, Events, and Do
 
 ## Quick Start
 
-1. Start the app: `java -jar Iris.jar`
+1. Start the app: `java -jar iris.jar`
 2. Type commands into the input box and press Enter.
 3. Iris responds in the conversation panel.
 

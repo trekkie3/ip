@@ -44,7 +44,7 @@ test {
 }
 
 application {
-    mainClass.set("Launcher")
+    mainClass.set("iris.Launcher")
 }
 
 shadowJar {
