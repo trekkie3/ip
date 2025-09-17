@@ -43,7 +43,7 @@ public class DoAfter extends Task {
         String description = null;
         String afterStr = null;
         String[] split = argument.split(
-                makeSplitRegex(new String[]{"/after"})
+                makeSplitRegex(new String[]{FLAG_AFTER})
         );
         String capturing = "description";
         for (String item : split) {
@@ -56,7 +56,7 @@ public class DoAfter extends Task {
                 }
                 capturing = null;
             } else {
-                if (item.equals("/after")) {
+                if (item.equals(FLAG_AFTER)) {
                     capturing = "after";
                 } else {
                     throw new TaskException(TaskExceptionType.UNRECOGNIZED_ARGUMENT);

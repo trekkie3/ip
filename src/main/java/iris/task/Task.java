@@ -77,43 +77,73 @@ public abstract class Task {
             return null;
         }
         String[] parts = line.split("\\|");
+        if (parts.length < 3) {
+            return null;
+        }
+        String type = parts[0];
+        boolean isDone = Boolean.parseBoolean(parts[1]);
+        String description = parts[2];
+        return switch (type) {
+        case "TODO" -> deserializeTodo(isDone, description);
+        case "DEADLINE" -> deserializeDeadline(parts, isDone, description);
+        case "EVENT" -> deserializeEvent(parts, isDone, description);
+        case "DOAFTER" -> deserializeDoAfter(parts, isDone, description);
+        default -> null;
+        };
+    }
+
+    // --- Helpers (SLAP) ---
+
+    private static Task deserializeTodo(boolean isDone, String description) {
+        Todo todo = new Todo(description);
+        todo.setDone(isDone);
+        return todo;
+    }
+
+    private static Task deserializeDeadline(String[] parts, boolean isDone, String description) {
+        if (parts.length < 4) {
+            return null;
+        }
+        LocalDate by = parseStorageDate(parts[3]);
+        if (by == null) {
+            return null;
+        }
+        Deadline deadline = new Deadline(description, by);
+        deadline.setDone(isDone);
+        return deadline;
+    }
+
+    private static Task deserializeEvent(String[] parts, boolean isDone, String description) {
+        if (parts.length < 5) {
+            return null;
+        }
+        LocalDate from = parseStorageDate(parts[3]);
+        LocalDate to = parseStorageDate(parts[4]);
+        if (from == null || to == null) {
+            return null;
+        }
+        Event event = new Event(description, from, to);
+        event.setDone(isDone);
+        return event;
+    }
+
+    private static Task deserializeDoAfter(String[] parts, boolean isDone, String description) {
+        if (parts.length < 4) {
+            return null;
+        }
+        LocalDate after = parseStorageDate(parts[3]);
+        if (after == null) {
+            return null;
+        }
+        DoAfter doAfter = new DoAfter(description, after);
+        doAfter.setDone(isDone);
+        return doAfter;
+    }
+
+    private static LocalDate parseStorageDate(String value) {
         try {
-            String type = parts[0];
-            boolean isDone = Boolean.parseBoolean(parts[1]);
-            String description = parts[2];
-            switch (type) {
-            case "TODO":
-                Todo todo = new Todo(description);
-                todo.setDone(isDone);
-                return todo;
-            case "DEADLINE":
-                if (parts.length < 4) {
-                    return null;
-                }
-                Deadline deadline = new Deadline(description, LocalDate.parse(parts[3], DATE_STORAGE));
-                deadline.setDone(isDone);
-                return deadline;
-            case "EVENT":
-                if (parts.length < 5) {
-                    return null;
-                }
-                Event event = new Event(description,
-                        java.time.LocalDate.parse(parts[3], DATE_STORAGE),
-                        java.time.LocalDate.parse(parts[4], DATE_STORAGE)
-                );
-                event.setDone(isDone);
-                return event;
-            case "DOAFTER":
-                if (parts.length < 4) {
-                    return null;
-                }
-                DoAfter doAfter = new DoAfter(description, LocalDate.parse(parts[3], DATE_STORAGE));
-                doAfter.setDone(isDone);
-                return doAfter;
-            default:
-                return null;
-            }
-        } catch (Exception e) {
+            return LocalDate.parse(value, DATE_STORAGE);
+        } catch (Exception ex) {
             return null;
         }
     }

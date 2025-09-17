@@ -10,6 +10,11 @@ public class Event extends Task {
     private final LocalDate from;
     private final LocalDate to;
 
+    // Helper to improve readability of parsing state
+    private enum Capturing {
+        DESCRIPTION, FROM, TO
+    }
+
     /**
      * Constructs an Event iris.task.
      *
@@ -48,29 +53,39 @@ public class Event extends Task {
         if (argument == null) {
             throw new TaskException(TaskExceptionType.NO_ARGUMENTS_PROVIDED);
         }
+        String[] split = splitByFlags(argument);
+        ParsedArgs args = parseArgs(split);
+        LocalDate fromDate = parseDate(args.from);
+        LocalDate toDate = parseDate(args.to);
+        return new Event(args.description, fromDate, toDate);
+    }
+
+    // --- Helpers (SLAP) ---
+
+    private static String[] splitByFlags(String argument) {
+        return argument.split(makeSplitRegex(new String[]{FLAG_FROM, FLAG_TO}));
+    }
+
+    private static ParsedArgs parseArgs(String[] split) throws TaskException {
         String description = null;
         String from = null;
         String to = null;
-        String[] split = argument.split(
-                makeSplitRegex(new String[]{FLAG_FROM, FLAG_TO})
-        );
-        String capturing = "description";
-        for (String item : split) {
-            item = item.trim();
+        Capturing capturing = Capturing.DESCRIPTION;
+        for (String raw : split) {
+            String item = raw.trim();
             if (capturing != null) {
-                if (capturing.equals("description")) {
-                    description = item;
-                } else if (capturing.equals("from")) {
-                    from = item;
-                } else if (capturing.equals("to")) {
-                    to = item;
+                switch (capturing) {
+                case DESCRIPTION -> description = item;
+                case FROM -> from = item;
+                case TO -> to = item;
+                default -> throw new TaskException(TaskExceptionType.UNRECOGNIZED_ARGUMENT);
                 }
                 capturing = null;
             } else {
                 if (item.equals(FLAG_FROM)) {
-                    capturing = "from";
+                    capturing = Capturing.FROM;
                 } else if (item.equals(FLAG_TO)) {
-                    capturing = "to";
+                    capturing = Capturing.TO;
                 } else {
                     throw new TaskException(TaskExceptionType.UNRECOGNIZED_ARGUMENT);
                 }
@@ -79,13 +94,18 @@ public class Event extends Task {
         if (description == null || from == null || to == null) {
             throw new TaskException(TaskExceptionType.ARGUMENTS_MISSING);
         }
+        return new ParsedArgs(description, from, to);
+    }
+
+    private static LocalDate parseDate(String value) throws TaskException {
         try {
-            LocalDate fromDate = LocalDate.parse(from, DATE_INPUT);
-            LocalDate toDate = LocalDate.parse(to, DATE_INPUT);
-            return new Event(description, fromDate, toDate);
-        } catch (DateTimeParseException exception) {
+            return LocalDate.parse(value, DATE_INPUT);
+        } catch (DateTimeParseException ex) {
             throw new TaskException(TaskExceptionType.INVALID_DATE_FORMAT);
         }
+    }
+
+    private record ParsedArgs(String description, String from, String to) {
     }
 
     /**
