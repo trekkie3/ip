@@ -35,6 +35,7 @@ public class DialogBox extends HBox {
 
         if (isUser) {
             this.setAlignment(Pos.TOP_RIGHT);
+            this.getChildren().get(0).getStyleClass().add("user-label");
         } else {
             this.setAlignment(Pos.TOP_LEFT);
         }
